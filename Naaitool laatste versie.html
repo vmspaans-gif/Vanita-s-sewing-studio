@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naaipatroon Studio - Professional</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#ffffff;--bg2:#f7f7f5;--bg3:#f0efe9;
+    --text:#1a1a1a;--text2:#666;--text3:#999;
+    --border:#e0e0e0;--border2:#ccc;
+    --purple:#7F77DD;--purple-dark:#534AB7;--purple-light:#EEEDFE;
+    --red:#E24B4A;--radius:8px;--radius-lg:12px;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{--bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;--text:#f0f0f0;--text2:#aaa;--text3:#666;--border:#3a3a3a;--border2:#555;--purple-light:#2d2a4a;}
+  }
+  body{font-family:'Helvetica Neue',Arial,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;}
+  .container{max-width:900px;margin:0 auto;padding:20px 16px;}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:0.5px solid var(--border);}
+  header h1{font-size:20px;font-weight:600;}
+  header p{font-size:13px;color:var(--text2);margin-top:2px;}
+  .logo{width:38px;height:38px;background:var(--purple);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;}
+  .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;}
+  .tabs{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2);overflow-x:auto;}
+  .tab{padding:11px 16px;font-size:13px;cursor:pointer;border:none;background:transparent;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-0.5px;white-space:nowrap;transition:color .15s;}
+  .tab.active{color:var(--text);border-bottom-color:var(--purple);font-weight:500;}
+  .tab:hover{color:var(--text);}
+  .panel{display:none;padding:20px;}
+  .panel.active{display:block;}
+  .sec{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:12px;color:var(--text2);}
+  .field input, .field select, select, input[type="text"]{padding:7px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--text);width:100%;transition:border-color .15s;}
+  .field input:focus, select:focus{outline:none;border-color:var(--purple);}
+  .btn{padding:8px 16px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:13px;cursor:pointer;background:var(--bg);color:var(--text);display:inline-flex;align-items:center;gap:6px;transition:background .15s;}
+  .btn:hover{background:var(--bg2);}
+  .btn.primary{background:var(--purple);color:#fff;border-color:var(--purple);}
+  .btn.primary:hover{background:var(--purple-dark);}
+  .btn.sm{padding:5px 11px;font-size:12px;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+  .btn.danger{color:var(--red);border-color:var(--red);}
+  .btn.danger:hover{background:#fff0f0;}
+  .toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
+  .tbtn{padding:6px 12px;border:0.5px solid var(--border);border-radius:var(--radius);font-size:12px;cursor:pointer;background:var(--bg2);color:var(--text);transition:all .15s;}
+  .tbtn.active{background:var(--purple-light);border-color:var(--purple);color:var(--purple-dark);}
+  .tbtn:hover{border-color:var(--border2);}
+  canvas{border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);display:block;width:100%;cursor:crosshair;}
+  .hint{font-size:11px;color:var(--text3);margin-top:6px;line-height:1.5;}
+  textarea{width:100%;padding:9px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);resize:vertical;transition:border-color .15s;}
+  .upload-zone{border:1.5px dashed var(--border2);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;background:var(--bg2);}
+  .upload-zone:hover{border-color:var(--purple);}
+  .ai-result{background:var(--bg2);border-radius:var(--radius);padding:14px;font-size:13px;line-height:1.7;color:var(--text);margin-top:12px;white-space:pre-wrap;border:0.5px solid var(--border);}
+  .loading{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);padding:12px 0;}
+  .spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .ai-box{border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg);margin-bottom:14px;}
+  .pattern-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:6px;background:var(--bg);}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;background:var(--purple-light);color:var(--purple-dark);}
+  .inline-input{width:54px;padding:3px 7px;font-size:12px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);}
+  .info-box{background:var(--purple-light);border:0.5px solid var(--purple);border-radius:var(--radius);padding:12px 14px;font-size:12px;color:var(--purple-dark);margin-bottom:14px;line-height:1.7;}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+  footer{text-align:center;font-size:11px;color:var(--text3);padding:20px 0 10px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">🧵</div>
+    <div>
+      <h1>Naaipatroon Studio <span style="font-size:11px; font-weight:normal; color:var(--purple);">PRO</span></h1>
+      <p>Beheer, importeer en bewerk al je patronen op één centrale plek</p>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab" onclick="showTab('ai')">✦ AI Patroon</button>
+      <button class="tab" onclick="showTab('maten')">📏 Maten</button>
+      <button class="tab active" onclick="showTab('tekenen')">✏️ Tekenveld & Import</button>
+      <button class="tab" onclick="showTab('patronen')">📁 Mijn Bibliotheek</button>
+      <button class="tab" onclick="showTab('instellingen')">⚙️ Instellingen</button>
+    </div>
+
+    <!-- AI TAB -->
+    <div class="panel" id="tab-ai">
+      <div class="info-box">
+        <strong>💡 Google API Key Tip</strong><br>
+        Als je gratis tier op 0 staat door landelijke restricties, kun je de omschrijving hieronder kopiëren en rechtstreeks aan je AI-assistent geven. Plak de maten-output daarna in de importeur bij het Tekenveld!
+      </div>
+
+      <div class="row" style="margin-bottom:16px;">
+        <div class="field" style="flex:1;">
+          <label>Gemini API-sleutel (Optioneel)</label>
+          <input type="password" id="apiKey" placeholder="Plak hier je AQ... of AIza... sleutel" oninput="checkKey()">
+        </div>
+        <button class="btn sm primary" onclick="slaSleutelOp()" style="margin-top:18px;">Opslaan</button>
+        <span id="keyStatus" class="key-status" style="margin-top:18px; font-size:12px;">Status checken...</span>
+      </div>
+
+      <div class="ai-box">
+        <h3>📸 Referentiefoto</h3>
+        <div class="upload-zone" onclick="document.getElementById('fotoInput').click()">
+          <div style="font-size:24px;">⬆</div>
+          <p>Upload een kledingstuk ter inspiratie</p>
+        </div>
+        <input type="file" id="fotoInput" accept="image/*" style="display:none" onchange="handleFoto(event)">
+        <img id="previewImg" class="preview-img" style="display:none; max-height:100px; margin-top:10px;">
+        <div id="fotoNaam" style="font-size:11px; margin-top:4px;"></div>
+      </div>
+
+      <div class="ai-box">
+        <h3>💬 Beschrijving voor de AI</h3>
+        <textarea id="beschrijving" style="min-height:80px;" placeholder="Wat wil je maken?"></textarea>
+      </div>
+      <button class="btn primary" id="genBtn" onclick="genereerPatroon()">✦ Start AI Berekening</button>
+      <div id="loadingDiv" style="display:none" class="loading"><div class="spinner"></div><span id="loadingTxt">Laden...</span></div>
+      <div id="aiResultDiv" style="display:none;" class="ai-result" id="aiResult"></div>
+    </div>
+
+    <!-- MATEN TAB -->
+    <div class="panel" id="tab-maten">
+      <span class="sec">Lichaamsmaten (cm)</span>
+      <div class="grid2" style="margin-top:10px;">
+        <div class="field"><label>Borstomvang</label><input type="number" id="m_borst" placeholder="90" oninput="saveMaten();calcSize()"></div>
+        <div class="field"><label>Taille</label><input type="number" id="m_taille" placeholder="70" oninput="saveMaten();calcSize()"></div>
+        <div class="field"><label>Heupomvang</label><input type="number" id="m_heup" placeholder="96" oninput="saveMaten();calcSize()"></div>
+        <div class="field"><label>Schouderlengte</label><input type="number" id="m_schouder" placeholder="38" oninput="saveMaten()"></div>
+        <div class="field"><label>Ruglengte</label><input type="number" id="m_rug" placeholder="40" oninput="saveMaten()"></div>
+        <div class="field"><label>Armlengte</label><input type="number" id="m_arm" placeholder="58" oninput="saveMaten()"></div>
+        <div class="field"><label>Beenlengte (inseam)</label><input type="number" id="m_been" placeholder="76" oninput="saveMaten()"></div>
+        <div class="field"><label>Nekbreedte</label><input type="number" id="m_nek" placeholder="14" oninput="saveMaten()"></div>
+      </div>
+      <button class="btn primary" onclick="saveMaten();alert('Maten lokaal beveiligd opgeslagen!')">💾 Maten Opslaan</button>
+      <span id="sizeBadge" style="margin-left:10px;"></span>
+    </div>
+
+    <!-- TEKENEN TAB -->
+    <div class="panel active" id="tab-tekenen">
+      <div class="toolbar">
+        <button class="tbtn active" id="tool-pen" onclick="setTool('pen')">✏️ Pen Tool</button>
+        <button class="tbtn" id="tool-rect" onclick="setTool('rect')">▭ Rechthoek</button>
+        <span style="flex:1"></span>
+        <button class="tbtn" onclick="undoLast()">↩ Stap Terug</button>
+        <button class="tbtn" onclick="clearCanvas()">🗑 Canvas Leegmaken</button>
+        <button class="tbtn" onclick="toggleSnap()">🧲 Magnetisch: <span id="snapTxt">Aan</span></button>
+      </div>
+      
+      <!-- GEÜPGRADEDE DYNAMISCHE ZOOM BALK -->
+      <div class="row" style="background:var(--bg2); padding:10px; border-radius:var(--radius); margin-bottom:10px; display:flex; gap:12px; align-items:center;">
+        <div style="display:flex; gap:4px; align-items:center;">
+          <span style="font-size:12px; font-weight:600; margin-right:4px;">Zoomniveau:</span>
+          <button class="btn sm" onclick="pasZoomAan(-1)" style="padding:4px 10px;">➖ Uitzoomen</button>
+          <span id="zoomDisplay" style="font-size:12px; font-weight:bold; min-width:60px; text-align:center; background:var(--bg); padding:4px 8px; border-radius:6px; border:0.5px solid var(--border2);">1cm = 5px</span>
+          <button class="btn sm" onclick="pasZoomAan(1)" style="padding:4px 10px;">➕ Inzoomen</button>
+        </div>
+        <span style="font-size:12px; margin-left:10px;">Naad: <input type="number" id="naad" value="1.5" min="0" max="5" step="0.5" class="inline-input" onchange="redraw()"> cm</span>
+        <label style="font-size:12px; margin-left:10px; cursor:pointer;"><input type="checkbox" id="showGrid" checked onchange="redraw()"> Raster</label>
+        <label style="font-size:12px; margin-left:10px; cursor:pointer;"><input type="checkbox" id="showMaten" checked onchange="redraw()"> Centimeters tonen</label>
+      </div>
+
+      <canvas id="drawCanvas" width="860" height="420"></canvas>
+      <p class="hint">💡 <strong>Live Hulplijn actief:</strong> Klik om een punt te zetten; je ziet direct de stippellijn met de exacte centimeters live meebewegen naar je muis! Dubbelklik om een vorm te sluiten.</p>
+      
+      <!-- DIRECTE IMPORT-MODULE -->
+      <div style="margin-top:20px; padding-top:15px; border-top:1px dashed var(--border);">
+        <span class="sec">⚡ Directe Vorm-Importeur (Plak hier de AI of Externe data)</span>
+        <textarea id="importCodeBox" style="min-height:60px; margin-top:8px; font-family:monospace; font-size:12px;" placeholder='Voorbeeld: {"naam":"Voorpand", "punten":[{"x":0,"y":0},{"x":29,"y":0},{"x":31,"y":24},{"x":29,"y":68},{"x":0,"y":68}]}'></textarea>
+        <button class="btn sm primary" style="margin-top:6px;" onclick="importeerDirecteVorm()">📐 Genereer Vorm op Canvas</button>
+      </div>
+
+      <!-- OPSLAAN MET CATEGORIE -->
+      <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border); display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+        <div class="field" style="flex:2; min-width:200px;">
+          <label>Naam van dit patroon</label>
+          <input type="text" id="patroonNaam" placeholder="Bijv. Halter Top Voorpand">
+        </div>
+        <div class="field" style="flex:1; min-width:150px;">
+          <label>Categorie / Map</label>
+          <select id="patroonCategorie">
+            <option value="Hempen & Tops">Hempen & Tops</option>
+            <option value="Broeken & Rokken">Broeken & Rokken</option>
+            <option value="Jurken">Jurken</option>
+            <option value="Tassen & Acc.">Tassen & Acc.</option>
+            <option value="Downloads/Extern">Downloads/Extern</option>
+          </select>
+        </div>
+        <button class="btn primary" style="height:36px;" onclick="savePatroon()">💾 Opslaan in Bibliotheek</button>
+        <button class="btn" style="height:36px;" onclick="printCanvas()">🖨️ Afdrukken</button>
+      </div>
+    </div>
+
+    <!-- BIBLIOTHEEK (OPGESLAGEN) TAB -->
+    <div class="panel" id="tab-patronen">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <span class="sec">Filter op Categorie:</span>
+          <select id="bibliotheekFilter" style="width:200px; margin-top:4px;" onchange="renderLijst()">
+            <option value="ALLES">📁 Toon Alle Categorieën</option>
+            <option value="Hempen & Tops">Hempen & Tops</option>
+            <option value="Broeken & Rokken">Broeken & Rokken</option>
+            <option value="Jurken">Jurken</option>
+            <option value="Tassen & Acc.">Tassen & Acc.</option>
+            <option value="Downloads/Extern">Downloads/Extern</option>
+          </select>
+        </div>
+        <button class="btn sm" onclick="exportAll()">⬇ Volledige Back-up Exporteren</button>
+      </div>
+      <div id="patroonLijst"></div>
+    </div>
+
+    <!-- INSTELLINGEN TAB -->
+    <div class="panel" id="tab-instellingen">
+      <div class="sec">Kleurinstellingen Studio</div>
+      <div class="row"><label style="font-size:13px;width:140px;">Lijnkleur patronen</label><input type="color" id="lineColor" value="#7F77DD" onchange="redraw()"></div>
+      <div class="row"><label style="font-size:13px;width:140px;">Rasterkleur</label><input type="color" id="gridColor" value="#e8e8e8" onchange="redraw()"></div>
+      <div class="sec" style="margin-top:20px;">Data Beheer</div>
+      <button class="btn" onclick="document.getElementById('importInput').click()">⬆ Importeer Extern Patroon / Back-up (.json)</button>
+      <input type="file" id="importInput" accept=".json" style="display:none" onchange="handleImport(event)">
+    </div>
+  </div>
+  <footer>Naaipatroon Studio Professional · Lokaal Beveiligde Browser-Opslag</footer>
+</div>
+
+<script>
+let currentTool='pen', points=[], shapes=[], snapOn=true, tempPoint=null;
+let rectStart=null, isDrawingRect=false;
+let uploadedImageData=null;
+const canvas=document.getElementById('drawCanvas');
+const ctx=canvas.getContext('2d');
+
+function init(){
+  loadMaten();
+  redraw();
+  const key=localStorage.getItem('naai_gemini_key')||'';
+  if(key){document.getElementById('apiKey').value=key; updateKeyStatus(true);}else{updateKeyStatus(false);}
+}
+
+function showTab(n){
+  const names=['ai','maten','tekenen','patronen','instellingen'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',names[i]===n));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+  if(n==='tekenen') redraw();
+  if(n==='patronen') renderLijst();
+}
+
+function slaSleutelOp(){
+  const k=document.getElementById('apiKey').value.trim();
+  localStorage.setItem('naai_gemini_key',k);
+  updateKeyStatus(k.length > 5);
+  alert('Sleutel verwerkt!');
+}
+function updateKeyStatus(ok){
+  const el=document.getElementById('keyStatus');
+  if(el){
+    el.textContent=ok?'✓ Geconfigureerd':'Geen actieve sleutel (Gebruik handmatige import indien nodig)';
+    el.style.color=ok?'#1a7a4a':'#a04000';
+  }
+}
+function checkKey(){ updateKeyStatus(document.getElementById('apiKey').value.trim().length > 5); }
+function getKey(){return localStorage.getItem('naai_gemini_key')||'';}
+
+function setTool(t){
+  currentTool=t;
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tool-'+t).classList.add('active');
+}
+function toggleSnap(){snapOn=!snapOn;document.getElementById('snapTxt').textContent=snapOn?'Aan':'Uit';}
+
+// DYNAMISCHE ZOOM FUNCTIES
+function pasZoomAan(richting) {
+  let huidigeSchaal = parseFloat(localStorage.getItem('naai_schaal')) || 5;
+  huidigeSchaal = Math.max(2, Math.min(15, huidigeSchaal + richting));
+  localStorage.setItem('naai_schaal', huidigeSchaal);
+  redraw();
+}
+function getScale(){
+  return parseFloat(localStorage.getItem('naai_schaal')) || 5;
+}
+
+function snap(v){if(!snapOn)return v;const g=getScale();return Math.round(v/g)*g;}
+function getPos(e){
+  const r=canvas.getBoundingClientRect();
+  return{x:snap((e.clientX-r.left)*(canvas.width/r.width)),y:snap((e.clientY-r.top)*(canvas.height/r.height))};
+}
+function getLineColor(){return document.getElementById('lineColor').value||'#7F77DD';}
+
+canvas.addEventListener('mousedown',e=>{if(currentTool==='rect'){rectStart=getPos(e);isDrawingRect=true;}});
+canvas.addEventListener('mousemove',e=>{tempPoint=getPos(e);redraw();});
+canvas.addEventListener('mouseup',e=>{
+  if(currentTool==='rect'&&isDrawingRect&&rectStart){
+    const end=getPos(e);
+    if(Math.abs(end.x-rectStart.x)>6&&Math.abs(end.y-rectStart.y)>6){
+      shapes.push({pts:[rectStart,{x:end.x,y:rectStart.y},end,{x:rectStart.x,y:end.y}],tool:'rect',color:getLineColor(),label:''});
+    }
+    rectStart=null;isDrawingRect=false;redraw();
+  }
+});
+canvas.addEventListener('mouseleave',()=>{tempPoint=null;redraw();});
+canvas.addEventListener('click',e=>{if(currentTool==='rect')return;points.push(getPos(e));redraw();});
+canvas.addEventListener('dblclick',e=>{
+  if(currentTool==='rect')return;
+  if(points.length>1){shapes.push({pts:[...points],tool:'pen',color:getLineColor(),label:''});points=[];redraw();}
+});
+
+function undoLast(){if(points.length>0)points.pop();else shapes.pop();redraw();}
+function clearCanvas(){if(confirm('Canvas leegmaken? Dit wist niet je opgeslagen bibliotheek.')){points=[];shapes=[];redraw();}}
+
+// SLIM SCHAALBAAR RASTER IN REDRAW
+function redraw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const g=getScale();
+  
+  if(document.getElementById('zoomDisplay')) {
+    document.getElementById('zoomDisplay').textContent = `1cm = ${g}px`;
+  }
+
+  if(document.getElementById('showGrid').checked){
+    const gc=document.getElementById('gridColor').value;
+    ctx.strokeStyle=gc;
+    
+    // Als we ver uitzoomen (minder dan 5px per cm), maak de ruitjes dan 5cm groot voor rust aan de ogen
+    const ruitjeCm = g < 5 ? 5 : 1; 
+    const stapGrootte = g * ruitjeCm;
+
+    ctx.lineWidth=0.5;
+    for(let x=0; x<canvas.width; x+=stapGrootte){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
+    for(let y=0; y<canvas.height; y+=stapGrootte){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+    
+    ctx.lineWidth=1.2;
+    for(let x=0; x<canvas.width; x+=(stapGrootte * 5)){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
+    for(let y=0; y<canvas.height; y+=(stapGrootte * 5)){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+  }
+  
+  const naad=(parseFloat(document.getElementById('naad').value)||1.5)*g;
+  const showM=document.getElementById('showMaten').checked;
+  shapes.forEach(s=>drawShape(s.pts,s.color||'#7F77DD',naad,showM,true,s.label||''));
+  
+  if(points.length>0){
+    drawShape(points,getLineColor(),naad,false,false,'');
+    if(tempPoint && currentTool==='pen'){
+      const lastPt = points[points.length-1];
+      ctx.strokeStyle = getLineColor() + '88'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(lastPt.x, lastPt.y); ctx.lineTo(tempPoint.x, tempPoint.y); ctx.stroke(); ctx.setLineDash([]);
+      if(showM){
+        const dx = tempPoint.x - lastPt.x; const dy = tempPoint.y - lastPt.y;
+        const cm = (Math.sqrt(dx*dx+dy*dy)/g).toFixed(1);
+        ctx.fillStyle = '#7F77DD'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(cm + ' cm', (lastPt.x + tempPoint.x)/2, (lastPt.y + tempPoint.y)/2 - 8);
+      }
+    }
+  }
+  if(currentTool==='rect'&&isDrawingRect&&rectStart&&tempPoint){
+    ctx.strokeStyle=getLineColor();ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.strokeRect(rectStart.x,rectStart.y,tempPoint.x-rectStart.x,tempPoint.y-rectStart.y);
+    if(showM){
+      const wCm = (Math.abs(tempPoint.x - rectStart.x)/g).toFixed(1);
+      const hCm = (Math.abs(tempPoint.y - rectStart.y)/g).toFixed(1);
+      ctx.fillStyle = '#7F77DD'; ctx.font = 'bold 11px sans-serif';
+      ctx.fillText(wCm + ' x ' + hCm + ' cm', rectStart.x + (tempPoint.x - rectStart.x)/2, rectStart.y - 5);
+    }
+    ctx.setLineDash([]);
+  }
+}
+
+function drawShape(pts,color,naad,showM,closed,label){
+  if(pts.length<1)return;
+  if(pts.length===1){ctx.fillStyle=color;ctx.beginPath();ctx.arc(pts[0].x,pts[0].y,4,0,Math.PI*2);ctx.fill();return;}
+  if(closed&&pts.length>2){
+    ctx.fillStyle=color+'15'; ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+    pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath();ctx.fill();
+  }
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y)); if(closed)ctx.closePath(); ctx.stroke();
+  if(closed&&naad>0){
+    const cx=pts.reduce((a,p)=>a+p.x,0)/pts.length; const cy=pts.reduce((a,p)=>a+p.y,0)/pts.length;
+    ctx.strokeStyle='#E24B4A';ctx.lineWidth=1;ctx.setLineDash([5,4]); ctx.beginPath();
+    pts.forEach((p,i)=>{
+      const dx=p.x-cx,dy=p.y-cy,len=Math.sqrt(dx*dx+dy*dy)||1;
+      i===0?ctx.moveTo(p.x+(dx/len)*naad,p.y+(dy/len)*naad):ctx.lineTo(p.x+(dx/len)*naad,p.y+(dy/len)*naad);
+    });
+    ctx.closePath();ctx.stroke();ctx.setLineDash([]);
+  }
+  if(showM&&closed&&pts.length>1){
+    const g=getScale(); ctx.fillStyle='#666';ctx.font='10px sans-serif';ctx.textAlign='center';
+    for(let i=0;i<pts.length;i++){
+      const a=pts[i],b=pts[(i+1)%pts.length];
+      ctx.fillText((Math.sqrt((b.x-a.x)**2+(b.y-a.y)**2)/g).toFixed(1)+' cm',(a.x+b.x)/2,(a.y+b.y)/2-4);
+    }
+  }
+}
+
+function importeerDirecteVorm() {
+  const rawData = document.getElementById('importCodeBox').value.trim();
+  if(!rawData) { alert('Het importveld is leeg!'); return; }
+  try {
+    const data = JSON.parse(rawData);
+    const g = getScale();
+    if(data.punten && Array.isArray(data.punten)) {
+      const convertedPoints = data.punten.map(pt => ({
+        x: snap(40 + (pt.x * g)),
+        y: snap(40 + (pt.y * g))
+      }));
+      shapes.push({pts: convertedPoints, tool: 'pen', color: getLineColor(), label: data.naam || 'Geïmporteerd deel'});
+      redraw();
+      alert('📐 Vorm succesvol op het canvas geplaatst!');
+    }
+  } catch(e) { alert('Fout bij het verwerken van de JSON.'); }
+}
+
+function saveMaten(){
+  const f=['borst','taille','heup','schouder','rug','arm','been','nek']; const m={};
+  f.forEach(k=>{m[k]=document.getElementById('m_'+k).value;});
+  localStorage.setItem('naai_maten',JSON.stringify(m));
+}
+function loadMaten(){
+  const raw=localStorage.getItem('naai_maten');
+  if(raw){const m=JSON.parse(raw);Object.entries(m).forEach(([k,v])=>{if(document.getElementById('m_'+k))document.getElementById('m_'+k).value=v;});}
+  calcSize();
+}
+function calcSize(){
+  const b=parseFloat(document.getElementById('m_borst').value); const el=document.getElementById('sizeBadge');
+  if(!b){el.textContent='';return;}
+  const s=b<84?'S':b<96?'M':b<108?'L':'XL'; el.innerHTML='<span class="badge">Indicatie: Maat '+s+'</span>';
+}
+
+function savePatroon(){
+  const naam=document.getElementById('patroonNaam').value.trim()||'Patroon '+new Date().toLocaleDateString('nl');
+  const cat=document.getElementById('patroonCategorie').value;
+  if(shapes.length===0){alert('Teken of importeer eerst een vorm!');return;}
+  const db=JSON.parse(localStorage.getItem('naai_bibliotheek')||'[]');
+  db.push({naam, categorie: cat, shapes: shapes, datum: new Date().toLocaleDateString('nl'), schaal: getScale()});
+  localStorage.setItem('naai_bibliotheek',JSON.stringify(db));
+  alert('✅ Opgeslagen in map [' + cat + ']: ' + naam);
+  document.getElementById('patroonNaam').value = '';
+}
+
+function renderLijst(){
+  const db=JSON.parse(localStorage.getItem('naai_bibliotheek')||'[]');
+  const filter=document.getElementById('bibliotheekFilter').value;
+  const el=document.getElementById('patroonLijst');
+  const gefilterd = filter === 'ALLES' ? db : db.filter(p => p.categorie === filter);
+  if(!gefilterd.length){el.innerHTML='<p style="color:var(--text2);font-size:13px;padding:1rem 0;">Geen patronen gevonden.</p>';return;}
+  el.innerHTML=gefilterd.map((p,i)=>`
+    <div class="pattern-item">
+      <div>
+        <span style="font-size:14px;font-weight:500;">${p.naam}</span>
+        <span class="badge" style="margin-left:8px; font-size:10px;">${p.categorie||'Geen'}</span>
+        <span style="font-size:11px;color:var(--text2);display:block;margin-top:2px;">Vormen: ${p.shapes.length}</span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn sm primary" onclick="laadPatroonUitDb('${p.naam}')">👁 Openen</button>
+        <button class="btn sm danger" onclick="verwijderUitDb('${p.naam}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function laadPatroonUitDb(naam){
+  const db=JSON.parse(localStorage.getItem('naai_bibliotheek')||'[]');
+  const item = db.find(p => p.naam === naam);
+  if(item){
+    shapes = item.shapes || []; points = [];
+    if(item.schaal) { localStorage.setItem('naai_schaal', item.schaal); }
+    if(item.categorie) document.getElementById('patroonCategorie').value = item.categorie;
+    document.getElementById('patroonNaam').value = item.naam;
+    showTab('tekenen'); redraw();
+  }
+}
+
+function verwijderUitDb(naam){
+  if(!confirm('Patroon wissen?'))return;
+  let db=JSON.parse(localStorage.getItem('naai_bibliotheek')||'[]');
+  db = db.filter(p => p.naam !== naam); localStorage.setItem('naai_bibliotheek',JSON.stringify(db)); renderLijst();
+}
+
+function exportAll(){
+  const data=localStorage.getItem('naai_bibliotheek')||'[]';
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));
+  a.download='Mijn_Naaipatronen_Backup.json'; a.click();
+}
+function handleImport(e){
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const geïmporteerd=JSON.parse(ev.target.result);
+      let huidigeDb=JSON.parse(localStorage.getItem('naai_bibliotheek')||'[]');
+      if(Array.isArray(geïmporteerd)){ huidigeDb = huidigeDb.concat(geïmporteerd); }else{ huidigeDb.push(geïmporteerd); }
+      localStorage.setItem('naai_bibliotheek',JSON.stringify(huidigeDb)); alert('✅ Geïmporteerd!'); renderLijst();
+    }catch(e){alert('Fout bij import.');}
+  };
+  reader.readAsText(file);
+}
+function printCanvas(){ const w=window.open('','_blank'); w.document.write(`<html><body><img src="${canvas.toDataURL()}"><script>window.onload=()=>window.print()<\/script></body></html>`); w.document.close(); }
+async function genereerPatroon(){ alert('Gebruik de handmatige importeur!'); }
+function handleFoto(e){ const file=e.target.files[0]; if(file) document.getElementById('fotoNaam').textContent='📎 '+file.name; }
+
+init();
+</script>
+</body>
+</html>
